@@ -97,12 +97,12 @@ int main(int argc, char *argv[])
   }
 
   // DEBUG: energy.ppm
-  for (int row = 0; row < 5; ++row) {
-    for (int col = 0; col < 6; ++col) {
-      cout << "(" << col << ", " << row << ") ENERGY: " << energy(image, col, row, 6, 5) << "   ";
-    }
-    cout << endl;
-  }
+  //for (int row = 0; row < 5; ++row) {
+   // for (int col = 0; col < 6; ++col) {
+  //    cout << "(" << col << ", " << row << ") ENERGY: " << energy(image, col, row, 6, 5) << "   ";
+  //  }
+  //  cout << endl;
+ // }
 
   // DEBUG: testing getVerticalSeam()
   //int *t = new int[5]{0};
@@ -126,9 +126,9 @@ int main(int argc, char *argv[])
 
       if (height - targetHeight > 0)
       {
-        //int *horizontalSeam = findMinHorizontalSeam(image, width, height);
-        //removeHorizontalSeam(image, width, height, horizontalSeam);
-        //delete [] horizontalSeam;
+        int *horizontalSeam = findMinHorizontalSeam(image, width, height);
+        removeHorizontalSeam(image, width, height, horizontalSeam);
+        delete [] horizontalSeam;
       }
     }
 

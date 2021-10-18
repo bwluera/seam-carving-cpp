@@ -123,6 +123,8 @@ int getVerticalSeam(const Pixel *const*image, int start_col, int width, int heig
     throw std::invalid_argument("Image array cannot contain null pointers.");
   }
 
+
+  //cout << "verticalCalc" << endl;
   // Assume len(seam) == height
   seam[0] = start_col;
 
@@ -200,19 +202,99 @@ void removeVerticalSeam(Pixel **image, int& width, int height, int *verticalSeam
   width--;
 }
 
-/*
+
 // TODO Write this function for extra credit
 int getHorizontalSeam(const Pixel *const*image, int start_row, int width, int height, int* seam)
 {
-  return 0;
+  // cout << "horizCalc" << endl;
+  if (width <= 0 || height <= 0) {
+    throw std::invalid_argument("Image width and/or height cannot be 0.");
+  }
+
+  if (start_row < 0 || start_row >= height) {
+    throw std::invalid_argument("Starting row must be within array bounds.");
+  }
+
+  if (!validPixelArray(image, width, height)) {
+    throw std::invalid_argument("Image array cannot contain null pointers.");
+  }
+
+  // Assume len(seam) == width
+  seam[0] = start_row;
+
+  // initialize to energy of first pixel
+  int total_minimal_energy = energy(image, 0, start_row, width, height);
+
+  int current_row = start_row;
+  for (int col = 1; col < width; ++col) {
+    // find appropriate minimal energy pixel
+    // if on edge, do not consider any pixels over bounds
+
+    // These directions are in relation to the direction the path is moving
+    // i.e. facing downward
+    int forward = energy(image, col, current_row, width, height);
+    // Must determine these below, might be on column bound
+    int left;
+    int right;
+
+
+    if (height == 1) {
+      seam[col] = current_row;
+    }
+    else if (current_row == 0) { // can only go right or forward
+      right = energy(image, col, current_row + 1, width, height);
+
+      if (forward <= right) {
+        seam[col] = current_row;
+      } else { // Minimum is right
+        seam[col] = current_row + 1;
+      }
+    }
+    else if (current_row == height - 1) { // can only go left or forward
+      left = energy(image, col, current_row - 1, width, height);
+      
+      if (forward <= left) {
+        seam[col] = current_row;
+      }
+      else { // minimum is left
+        seam[col] = current_row - 1;
+      }
+    }
+    else { // general case: not on row bound
+      left = energy(image, col, current_row - 1, width, height);
+      right = energy(image, col, current_row + 1, width, height);
+
+      if (forward <= right && forward <= left) { // forward is leq both left & right
+        seam[col] = current_row;
+      }
+      else if (left <= right) { // minimum is left
+        seam[col] = current_row - 1;
+      }
+      else { // minimum is right
+        seam[col] = current_row + 1;
+      }
+    }
+
+    // make sure the current column is set to whatever the next column
+    // in the path was determined to be
+    current_row = seam[col]; 
+    total_minimal_energy += energy(image, col, seam[col], width, height);
+  }
+
+  return total_minimal_energy;
 }
 
 // TODO Write this function for extra credit
-void removeHorizontalSeam(Pixel **image, int width, int& height, int *horizontalSeam)
-{
+void removeHorizontalSeam(Pixel **image, int width, int& height, int *horizontalSeam) {
   
+  for (int col = 0; col < width; ++col) {
+    for (int row = horizontalSeam[col]; row < height - 1; ++row) {
+      image[col][row] = image[col][row + 1];
+    }
+  }
+
+  height--;
 }
-*/
 
 int *findMinVerticalSeam(const Pixel *const*image, int width, int height)
 {
@@ -243,7 +325,8 @@ int *findMinVerticalSeam(const Pixel *const*image, int width, int height)
 
   return minSeam;
 }
-/*
+
+
 int *findMinHorizontalSeam(const Pixel *const*image, int width, int height)
 {
   // initialize minSeam and minDistance to seam starting at first row (index 0)
@@ -273,7 +356,8 @@ int *findMinHorizontalSeam(const Pixel *const*image, int width, int height)
 
   return minSeam;
 }
-*/
+
+
 Pixel **createImage(int width, int height)
 {
   cout << "Start createImage... " << endl;
